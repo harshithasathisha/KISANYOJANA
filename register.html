@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title data-i18n="register_title">Create Account</title>
+  <style>
+    body {
+      font-family: Poppins, Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: url("https://c8.alamy.com/comp/2J04BR7/happy-smiling-indian-woman-farmer-showing-green-screen-mobile-phone-in-front-of-green-farmland-concept-of-app-advertisement-and-farm-product-2J04BR7.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      margin: 20px 0;
+      font-size: 2.2rem;
+      text-shadow: 0 0 8px rgba(0,0,0,0.8);
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      padding: 28px 26px;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      width: min(92vw, 360px);
+      animation: slideIn 0.8s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    h2 {
+      margin: 0 0 16px 0;
+      color: #065f46;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 10px 0 6px 0;
+      color: #065f46;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+    }
+    .muted {
+      text-align: center;
+      margin-top: 12px;
+      color: #475569;
+    }
+    a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Raitha Bandhu</h1>
+
+  <div class="container">
+    <div class="card">
+      <h2 data-i18n="register_title">Create Account</h2>
+      <form onsubmit="return handleRegister(event)">
+        <label for="reg_user" data-i18n="username">Username</label>
+        <input data-i18n-ph data-i18n="username" id="reg_user" type="text" required/>
+        
+        <label for="reg_pass" data-i18n="password">Password</label>
+        <input data-i18n-ph data-i18n="password" id="reg_pass" type="password" required/>
+        
+        <button type="submit" data-i18n="register_btn">Register</button>
+      </form>
+      <p class="muted">
+        <span data-i18n="have_account">Already have an account?</span> 
+        <a href="login.html" data-i18n="login_link">Login</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ✅ Scripts (keep for voice + i18n functionality) -->
+  <script src="{{ url_for('static', filename='css/data.js') }}"></script>
+  <script src="{{ url_for('static', filename='css/i18n.js') }}"></script>
+  <script src="{{ url_for('static', filename='voice.js') }}"></script>
+
+  <script>
+    function handleRegister(e) {
+      e.preventDefault();
+      const u = document.getElementById('reg_user').value.trim();
+      const p = document.getElementById('reg_pass').value;
+      if (!u || !p) { 
+        RB_VOICE.speakKey('register_fail'); 
+        return false; 
+      }
+      const users = JSON.parse(localStorage.getItem('rb_users')||'[]');
+      if (users.find(x => x.u === u)) {
+        RB_VOICE.speakKey('user_exists');
+        alert((RB_I18N.t[RB_I18N.getLang()]||RB_I18N.t.en).user_exists);
+        return false;
+      }
+      users.push({u,p});
+      localStorage.setItem('rb_users', JSON.stringify(users));
+      RB_VOICE.speakKey('register_success');
+      setTimeout(() => location.href='login.html', 900);
+      return false;
+    }
+
+    // 🔊 Say welcome when page loads
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof RB_VOICE !== "undefined" && RB_VOICE.speakText) {
+        RB_VOICE.speakText("Welcome to Raitha Bandhu");
+      }
+    });
+  </script>
+</body>
+</html>
